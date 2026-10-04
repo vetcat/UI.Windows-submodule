@@ -13,7 +13,11 @@
 			
 			var minWidth = GetGreatestMinimumChildWidth() + padding.left + padding.right;
 			
+			#if UNITY_6000_6_OR_NEWER
+			SetLayoutInputForAxis(minWidth, LayoutUtility.DefaultMaxSize, -1, -1, 0);
+			#else
 			SetLayoutInputForAxis(minWidth, -1, -1, 0);
+			#endif
 			
 		}
 		
@@ -152,8 +156,13 @@
 			
 			if (layoutInput) {
 				
-				if (axis == 1)
+				if (axis == 1) {
+					#if UNITY_6000_6_OR_NEWER
+					SetLayoutInputForAxis(yOffset, LayoutUtility.DefaultMaxSize, yOffset, -1, axis);
+					#else
 					SetLayoutInputForAxis(yOffset, yOffset, -1, axis);
+					#endif
+				}
 				
 			}
 			

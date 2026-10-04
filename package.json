@@ -1,29 +1,23 @@
 {
   "name": "com.me.ui.windows",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "displayName": "UI.Windows",
   "description": "Better UI workflow with Screen/Layout/Component model.",
-  "unity": "2019.1",
+  "unity": "6000.0",
   "dependencies": {
-    "com.unity.localization": "0.11.1-preview",
-    "com.unity.addressables": "1.19.4",
-    "com.unity.ui": "1.0.0-preview.18"
+    "com.unity.localization": "1.5.10",
+    "com.unity.addressables": "1.25.0",
+    "com.unity.inputsystem": "1.19.0",
+    "com.unity.ugui": "2.0.0",
+    "com.unity.burst": "1.8.13",
+    "com.unity.collections": "2.4.3"
   },
-  "scopedRegistries": [
-    {
-      "name": "General",
-      "url": "https://github.com/chromealex/UI.Windows-submodule.git",
-      "scopes": [
-        "com.me.ui.windows"
-      ]
-    }
-  ],
- "keywords": [
+  "keywords": [
     "ui",
     "windows",
     "framework",
     "ugui"
- ],
+  ],
   "author": {
     "name": "Alex Silaev",
     "email": "chrome.alex@gmail.com"

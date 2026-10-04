@@ -1,6 +1,12 @@
 using System.Linq;
 using System.IO;
 
+#if UNITY_6000_6_OR_NEWER
+using ObjectId = UnityEngine.EntityId;
+#else
+using ObjectId = System.Int32;
+#endif
+
 #if UNITY_EDITOR
 namespace UnityEditor.UI.Windows {
 
@@ -22,7 +28,7 @@ namespace UnityEditor.UI.Windows {
 
         }
         
-        private int gameObject;
+        private ObjectId gameObject;
         private string path;
         private string namespaceRoot;
         private string screenName;
@@ -44,7 +50,11 @@ namespace UnityEditor.UI.Windows {
             
             var instance = CreateInstance<CreateComponentDraftWindow>();
             instance.titleContent = new GUIContent("UIWS: Create Draft Component Tool");
+            #if UNITY_6000_6_OR_NEWER
+            instance.gameObject = go.GetEntityId();
+            #else
             instance.gameObject = go.GetInstanceID();
+            #endif
             instance.path = GetComponentsPath(path, out var screenPath, out var screenName);
 
             instance.namespaceRoot = screenPath.Replace("Assets/", string.Empty).Replace("/", ".").Replace("UIScreens", "Screens");
@@ -268,10 +278,18 @@ namespace UnityEditor.UI.Windows {
             if (string.IsNullOrEmpty(path) == false) {
                 var componentName = EditorPrefs.GetString("UI.Windows.Editor.ComponentTemplate.name");
                 var @namespace = EditorPrefs.GetString("UI.Windows.Editor.ComponentTemplate.namespace");
+                #if UNITY_6000_6_OR_NEWER
+                var storedId = EditorPrefs.GetString("UI.Windows.Editor.ComponentTemplate.gameObject");
+                var go = ulong.TryParse(storedId, System.Globalization.NumberStyles.Integer,
+                    System.Globalization.CultureInfo.InvariantCulture, out var rawId)
+                    ? EditorUtility.EntityIdToObject(EntityId.FromULong(rawId)) as GameObject
+                    : null;
+                #else
                 var instanceId = EditorPrefs.GetInt("UI.Windows.Editor.ComponentTemplate.gameObject");
                 var go = (GameObject)EditorUtility.InstanceIDToObject(instanceId);
+                #endif
                 var type = System.AppDomain.CurrentDomain.GetAssemblies().Select(x => x.GetTypes().FirstOrDefault(x => x.FullName.Contains($"{@namespace}.{componentName}"))).Where(x => x != null).FirstOrDefault();
-                if (type != null) {
+                if (type != null && go != null) {
                     go.AddComponent(type);
                 } else {
                     Debug.LogWarning($"Type was not found in assemblies: {@namespace}.{componentName}");
@@ -280,7 +298,7 @@ namespace UnityEditor.UI.Windows {
             EditorPrefs.DeleteKey("UI.Windows.Editor.ComponentTemplate.path");
         }
 
-        private static void Generate(CreateComponentDraftWindow window, string componentName, Item[] items, int go) {
+        private static void Generate(CreateComponentDraftWindow window, string componentName, Item[] items, ObjectId go) {
 
             if (componentName.EndsWith("Component") == false) {
                 componentName += "Component";
@@ -308,7 +326,12 @@ namespace UnityEditor.UI.Windows {
                 AssetDatabase.ImportAsset(path);
                 EditorPrefs.SetString("UI.Windows.Editor.ComponentTemplate.path", path);
                 EditorPrefs.SetString("UI.Windows.Editor.ComponentTemplate.name", componentName);
+                #if UNITY_6000_6_OR_NEWER
+                EditorPrefs.SetString("UI.Windows.Editor.ComponentTemplate.gameObject",
+                    EntityId.ToULong(go).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                #else
                 EditorPrefs.SetInt("UI.Windows.Editor.ComponentTemplate.gameObject", go);
+                #endif
                 EditorPrefs.SetString("UI.Windows.Editor.ComponentTemplate.namespace", window.namespaceRoot);
             }
             

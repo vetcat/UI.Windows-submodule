@@ -18,7 +18,11 @@ namespace UnityEditor.UI.Windows {
                 var evt = stream.GetEventType(i);
                 if (evt == UnityEditor.ObjectChangeKind.CreateGameObjectHierarchy) {
                     stream.GetCreateGameObjectHierarchyEvent(i, out var data);
+#if UNITY_6000_6_OR_NEWER
+                    var obj = UnityEditor.EditorUtility.EntityIdToObject(data.entityId) as GameObject;
+#else
                     var obj = UnityEditor.EditorUtility.InstanceIDToObject(data.instanceId) as GameObject;
+#endif
                     if (obj == null) continue;
                     {
                         var layout = obj.GetComponentInParent<uiws::WindowLayout>(true);
@@ -32,7 +36,11 @@ namespace UnityEditor.UI.Windows {
                     }
                 } else if (evt == UnityEditor.ObjectChangeKind.ChangeGameObjectStructure) {
                     stream.GetChangeGameObjectStructureEvent(i, out var data);
+#if UNITY_6000_6_OR_NEWER
+                    var obj = UnityEditor.EditorUtility.EntityIdToObject(data.entityId) as GameObject;
+#else
                     var obj = UnityEditor.EditorUtility.InstanceIDToObject(data.instanceId) as GameObject;
+#endif
                     if (obj == null) continue;
                     {
                         var layout = obj.GetComponentInParent<uiws::WindowLayout>(true);
@@ -46,7 +54,11 @@ namespace UnityEditor.UI.Windows {
                     }
                 } else if (evt == UnityEditor.ObjectChangeKind.DestroyGameObjectHierarchy) {
                     stream.GetDestroyGameObjectHierarchyEvent(i, out var data);
+#if UNITY_6000_6_OR_NEWER
+                    var obj = UnityEditor.EditorUtility.EntityIdToObject(data.entityId) as GameObject;
+#else
                     var obj = UnityEditor.EditorUtility.InstanceIDToObject(data.instanceId) as GameObject;
+#endif
                     if (obj == null) continue;
                     {
                         var layout = obj.GetComponentInParent<uiws::WindowLayout>(true);

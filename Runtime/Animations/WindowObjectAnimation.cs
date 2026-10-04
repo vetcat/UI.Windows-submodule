@@ -207,7 +207,11 @@
                     };
 
                     var prevRandomState = Random.state;
+                    #if UNITY_6000_6_OR_NEWER
+                    Random.InitState(state.instance.GetEntityId().GetHashCode());
+                    #else
                     Random.InitState(Mathf.Abs(state.instance.GetInstanceID()));
+                    #endif
                     var ease = (state.animationState == AnimationState.Show ? anim.show.ease : anim.hide.ease);
                     var tweener = WindowSystem.GetTweener();
                     tweener.Stop(anim);

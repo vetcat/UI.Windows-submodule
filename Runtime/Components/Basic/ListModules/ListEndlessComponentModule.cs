@@ -331,6 +331,7 @@ namespace UnityEngine.UI.Windows {
 
         [Space(10f)]
         public HorizontalOrVerticalLayoutGroup layoutGroup;
+        [System.NonSerialized]
         public List<RegistryBase> registries = new List<RegistryBase>();
         public float createOffset = 50f;
         

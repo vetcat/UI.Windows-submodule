@@ -14,7 +14,11 @@ namespace UnityEditor.UI.Windows {
 
         private UnityEditorInternal.ReorderableList Init(SerializedProperty property, GUIContent label) {
 
+#if UNITY_6000_6_OR_NEWER
+            var key = property.propertyPath + ":" + property.serializedObject.targetObject.GetEntityId();
+#else
             var key = property.propertyPath + ":" + property.serializedObject.targetObject.GetInstanceID();
+#endif
             if (this.dicList.TryGetValue(key, out var list) == false) {
                 
                 var items = property.FindPropertyRelative("items");
