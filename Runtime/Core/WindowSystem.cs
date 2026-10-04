@@ -215,6 +215,8 @@ namespace UnityEngine.UI.Windows {
 
         internal static WindowSystem _instance;
 
+        private bool shuttingDown;
+
         internal static WindowSystem instance {
             get {
 
@@ -257,7 +259,7 @@ namespace UnityEngine.UI.Windows {
 
         private void Run() {
         
-            if (WindowSystem._instance != null) return;
+            if (this.shuttingDown == true || WindowSystem._instance != null) return;
             WindowSystem._instance = this;
             GameObject.DontDestroyOnLoad(this.gameObject);
 
@@ -275,6 +277,8 @@ namespace UnityEngine.UI.Windows {
 
         public virtual void Start() {
 
+            if (this.shuttingDown == true) return;
+
             if (this.modules != null) {
                 for (int i = 0; i < this.modules.Count; ++i) {
                     this.modules[i]?.OnStart();
@@ -286,17 +290,36 @@ namespace UnityEngine.UI.Windows {
         }
 
         public void OnDestroy() {
-            
-            if (this.modules != null) {
-                for (int i = this.modules.Count - 1; i >= 0; --i) {
-                    this.modules[i]?.OnDestroy();
+
+            this.Shutdown();
+
+        }
+
+        /// <summary>
+        /// Releases this system's modules and global ownership synchronously.
+        /// Clean all owned windows through UI.Windows before calling this method,
+        /// then destroy the system GameObject. A replacement can initialize before
+        /// Unity processes the old object's deferred destruction.
+        /// </summary>
+        public void Shutdown() {
+
+            if (this.shuttingDown == true) return;
+            this.shuttingDown = true;
+            this.enabled = false;
+
+            try {
+                if (this.modules != null) {
+                    for (int i = this.modules.Count - 1; i >= 0; --i) {
+                        this.modules[i]?.OnDestroy();
+                    }
+                }
+            } finally {
+                if (WindowSystem._instance == this) {
+                    WindowSystem._instance = null;
+                    WindowSystem.onPointerUp = null;
+                    WindowSystem.onPointerDown = null;
                 }
             }
-
-            WindowSystem._instance = null;
-
-            WindowSystem.onPointerUp = null;
-            WindowSystem.onPointerDown = null;
 
         }
 

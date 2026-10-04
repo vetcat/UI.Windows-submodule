@@ -1,6 +1,6 @@
 # Unity 6 compatibility fork
 
-The UPM package at this repository root is `com.me.ui.windows` 1.2.8.
+The UPM package at this repository root is `com.me.ui.windows` 1.2.9.
 The compatibility integration branch is `unity6000-compat`; upstream remains
 [chromealex/UI.Windows-submodule](https://github.com/chromealex/UI.Windows-submodule).
 These patches start from upstream commit
@@ -26,6 +26,12 @@ These patches start from upstream commit
   Its camera/light and the optional Console camera contain no mandatory URP
   components. Configure rendering and game windows in project-owned prefabs or
   variants instead of editing the package.
+- `WindowSystem.Shutdown()` releases modules and global ownership synchronously
+  and once. Scene owners clean their windows (including pooled instances) first,
+  call `Shutdown()`, then use ordinary `Object.Destroy` for the system GameObject.
+  Deferred destruction of the old system cannot clear a replacement's singleton
+  or pointer callbacks. Shutdown disables the component and is terminal;
+  it does not move objects between scenes or create another UI lifecycle.
 
 All existing `.meta` GUIDs are preserved. MVP adapters, CompositionRoot and game
 logic belong outside this fork.
