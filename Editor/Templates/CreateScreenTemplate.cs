@@ -2,10 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+#if UNITY_6000_6_OR_NEWER
+using AssetCreationAction = UnityEditor.ProjectWindowCallback.AssetCreationEndAction;
+using ObjectId = UnityEngine.EntityId;
+#else
+using AssetCreationAction = UnityEditor.ProjectWindowCallback.EndNameEditAction;
+using ObjectId = System.Int32;
+#endif
 
 public static class ScriptTemplates {
 
-    internal class DoCreateScriptAsset : UnityEditor.ProjectWindowCallback.EndNameEditAction {
+    internal class DoCreateScriptAsset : AssetCreationAction {
 
         private System.Action<Object> onCreated;
         
@@ -29,7 +36,7 @@ public static class ScriptTemplates {
 
         }
 
-        public UnityEditor.ProjectWindowCallback.EndNameEditAction SetCallback(System.Action<Object> onCreated) {
+        public AssetCreationAction SetCallback(System.Action<Object> onCreated) {
 
             this.onCreated = onCreated;
             return this;
@@ -73,7 +80,7 @@ public static class ScriptTemplates {
 
         }
 
-        public override void Action(int instanceId, string pathName, string resourceFile) {
+        public override void Action(ObjectId instanceId, string pathName, string resourceFile) {
 
             var instance = DoCreateScriptAsset.CreateScriptAssetFromTemplate(pathName, resourceFile);
             ProjectWindowUtil.ShowCreatedAsset(instance);
@@ -139,7 +146,7 @@ public static class ScriptTemplates {
             var defaultNewFileName = fileName;
             var image = ScriptTemplates.scriptIcon;
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
-        0,
+        default(ObjectId),
         ScriptableObject.CreateInstance<DoCreateScriptAsset>().SetCallback((instance) => {
          
                     if (onCreated != null) onCreated.Invoke(instance);

@@ -9,8 +9,7 @@
         "Unity.Localization",
         "UnityEngine.UI",
         "Unity.Burst",
-        "Unity.Collections",
-        "FMODUnity"
+        "Unity.Collections"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

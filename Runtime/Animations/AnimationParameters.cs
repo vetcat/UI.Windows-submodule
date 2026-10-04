@@ -75,6 +75,7 @@
         public ShowHideParameters show;
         public ShowHideParameters hide;
 
+        [System.Serializable]
         public abstract class State {
 
             public abstract void CopyFrom(State other);

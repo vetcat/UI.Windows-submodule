@@ -19,11 +19,19 @@ namespace UnityEngine.UI.Windows.Modules {
         internal struct PrefabInstance : System.IEquatable<PrefabInstance> {
 
             private int hashCode;
+            #if UNITY_6000_6_OR_NEWER
+            private EntityId instanceId;
+            #else
             private int instanceId;
+            #endif
 
             public PrefabInstance(Object obj) {
                 this.hashCode = obj.GetHashCode();
+                #if UNITY_6000_6_OR_NEWER
+                this.instanceId = obj.GetEntityId();
+                #else
                 this.instanceId = obj.GetInstanceID();
+                #endif
             }
             
             public static bool operator ==(PrefabInstance a, PrefabInstance b) {
@@ -48,7 +56,11 @@ namespace UnityEngine.UI.Windows.Modules {
 
             public override string ToString() {
                 #if UNITY_EDITOR
+                #if UNITY_6000_6_OR_NEWER
+                return $"#{this.instanceId} {UnityEditor.EditorUtility.EntityIdToObject(this.instanceId)}";
+                #else
                 return $"#{this.instanceId} {UnityEditor.EditorUtility.InstanceIDToObject(this.instanceId)}";
+                #endif
                 #else
                 return $"#{this.instanceId} hash {this.hashCode}";
                 #endif
